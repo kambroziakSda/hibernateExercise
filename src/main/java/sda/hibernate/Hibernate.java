@@ -12,10 +12,9 @@ public class Hibernate {
                 .addAnnotatedClass(Student.class)
                 .buildSessionFactory()) {
 
-            Student student = new Student();
+            Student student = new Student("Jan", "Kowalski", new Address("Gdańsk","Grunwaldzka"));
 
             try (Session session = sessionFactory.openSession()) {
-
 
             }
 
