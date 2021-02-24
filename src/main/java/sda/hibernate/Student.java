@@ -15,11 +15,19 @@ public class Student {
     private String lastName;
 
     private LocalDateTime createTime;
+    private LocalDateTime lastModifiedTime;
+
 
     @PrePersist
     void prePersist(){
         System.out.println("Pre persist");
         createTime = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    void preUpdate(){
+        System.out.println("Pre update");
+        lastModifiedTime = LocalDateTime.now();
     }
 
 
@@ -32,11 +40,12 @@ public class Student {
         this.address = address;
     }
 
-    /*
-    Domyślny konstruktor potrzebny dla Hibernate przy wyciaganiu obiektow z bazy,
-    ale z racji tego że hibernate wykorzystuje mechanizm refleksji to widoczność tego kontruktora może być prywatna
-     */
+
     private Student() {
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
     }
 
     @Override
@@ -46,6 +55,7 @@ public class Student {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", createTime=" + createTime +
+                ", lastModifiedTime=" + lastModifiedTime +
                 ", address=" + address +
                 '}';
     }

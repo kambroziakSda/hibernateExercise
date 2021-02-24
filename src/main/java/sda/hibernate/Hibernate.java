@@ -19,9 +19,12 @@ public class Hibernate {
             saveStudent(sessionFactory);
 
             try (Session session = sessionFactory.openSession()) {
-                //zwróćmy uwagę że sama operacja find nie wymaga transakcji
+                //update wymaga transakcji tak samo jak insert
+                Transaction transaction = session.beginTransaction();
                 Student studentJan = session.find(Student.class, 1);
                 System.out.println("Student from database: " + studentJan);
+                studentJan.setAddress(new Address("Warszawa","Miodowa"));
+                transaction.commit();
 
             }
         }
