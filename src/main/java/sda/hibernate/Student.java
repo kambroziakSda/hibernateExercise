@@ -15,21 +15,22 @@ public class Student {
     private String lastName;
 
     private LocalDateTime createTime;
+
+    @Version //powoduje automatyczne odswiezanie czasu ostatniej aktualizacji przy update
     private LocalDateTime lastModifiedTime;
 
+    /*
+        Druga możliwość to dedykowane pole pod trzymanie wersji ogolnie @Version wykorzystywane jest
+        w mechanizmie optimistic lockow https://www.baeldung.com/jpa-optimistic-locking
+             */
+    // @Version
+    //private Integer counterVersion;
 
     @PrePersist
-    void prePersist(){
+    void prePersist() {
         System.out.println("Pre persist");
         createTime = LocalDateTime.now();
     }
-
-    @PreUpdate
-    void preUpdate(){
-        System.out.println("Pre update");
-        lastModifiedTime = LocalDateTime.now();
-    }
-
 
     @Embedded
     private Address address;

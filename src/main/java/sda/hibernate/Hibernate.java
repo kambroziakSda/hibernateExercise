@@ -16,14 +16,17 @@ public class Hibernate {
                 .buildSessionFactory()) {
 
 
-            saveStudent(sessionFactory);
+            //student pobrany w osobnej sesji
+            Student studentJan = saveStudent(sessionFactory);
 
             try (Session session = sessionFactory.openSession()) {
-                //update wymaga transakcji tak samo jak insert
                 Transaction transaction = session.beginTransaction();
-                Student studentJan = session.find(Student.class, 1);
+                Thread.sleep(5000); // w celu zademonstrowania mechanizmu version i optymisticlockingu
                 System.out.println("Student from database: " + studentJan);
-                studentJan.setAddress(new Address("Warszawa","Miodowa"));
+
+                //wciagniecie studenta do aktualnej sesji
+                Student mergedStudent = (Student) session.merge(studentJan);
+                mergedStudent.setAddress(new Address("Warszawa","Miodowa"));
                 transaction.commit();
 
             }
@@ -31,7 +34,7 @@ public class Hibernate {
 
     }
 
-    private static void saveStudent(SessionFactory sessionFactory) {
+    private static Student saveStudent(SessionFactory sessionFactory) {
         try (Session session = sessionFactory.openSession()) {
             //jpa api
             Transaction transaction = session.beginTransaction();
@@ -39,6 +42,7 @@ public class Hibernate {
             session.persist(studentJan);
             System.out.println("Before commit");
             transaction.commit(); //zapis do bazy dopiero tutaj
+            return studentJan;
         }
     }
 
