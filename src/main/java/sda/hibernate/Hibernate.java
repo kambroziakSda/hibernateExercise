@@ -16,35 +16,27 @@ public class Hibernate {
                 .buildSessionFactory()) {
 
 
+            saveStudent(sessionFactory);
+
             try (Session session = sessionFactory.openSession()) {
-
-            //jpa api
-                Transaction transaction = session.beginTransaction();
-                Student studentJan = new Student("Jan", "Kowalski", new Address("Gdańsk", "Grunwaldzka"));
-
-                /*
-                tutaj nie ma jescze zapisu, hibernate moze nawet sqli nie wysłac do bazy,
-                kiedy sqle wysyłane sa do bazy sterowane jest przez FlushMode
-                https://docs.jboss.org/hibernate/orm/5.2/javadocs/org/hibernate/FlushMode.html
-                 */
-
-                session.persist(studentJan);
-
-                System.out.println("Before commit");
-                transaction.commit(); //zapis do bazy dopiero tutaj
-
-
-            //hibernate api
-                transaction = session.beginTransaction();
-                Student studentAla = new Student("Ala", "Kowalska", new Address("Gdańsk", "Grunwaldzka"));
-                Serializable id = session.save(studentAla);
-                transaction.commit();
-
-                System.out.println(id);
+                //zwróćmy uwagę że sama operacja find nie wymaga transakcji
+                Student studentJan = session.find(Student.class, 1);
+                System.out.println("Student from database: " + studentJan);
 
             }
         }
 
+    }
+
+    private static void saveStudent(SessionFactory sessionFactory) {
+        try (Session session = sessionFactory.openSession()) {
+            //jpa api
+            Transaction transaction = session.beginTransaction();
+            Student studentJan = new Student("Jan", "Kowalski", new Address("Gdańsk", "Grunwaldzka"));
+            session.persist(studentJan);
+            System.out.println("Before commit");
+            transaction.commit(); //zapis do bazy dopiero tutaj
+        }
     }
 
 }

@@ -32,6 +32,13 @@ public class Student {
         this.address = address;
     }
 
+    /*
+    Domyślny konstruktor potrzebny dla Hibernate przy wyciaganiu obiektow z bazy,
+    ale z racji tego że hibernate wykorzystuje mechanizm refleksji to widoczność tego kontruktora może być prywatna
+     */
+    private Student() {
+    }
+
     @Override
     public String toString() {
         return "Student{" +
