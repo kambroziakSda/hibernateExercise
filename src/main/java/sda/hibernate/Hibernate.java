@@ -5,8 +5,10 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Hibernate {
 
@@ -16,10 +18,12 @@ public class Hibernate {
                 .addAnnotatedClass(Student.class)
                 .addAnnotatedClass(Grade.class)
                 .addAnnotatedClass(Teacher.class)
+                .addAnnotatedClass(Academy.class)
                 .buildSessionFactory()) {
 
 
-            saveStudent(sessionFactory);
+            saveStudent(sessionFactory, "Jan", "Kowalski");
+            saveStudent(sessionFactory, "Adam", "Nowak");
             selectAndUpdate(sessionFactory);
             //  delete(sessionFactory);
             try (Session session = sessionFactory.openSession()) {
@@ -38,6 +42,23 @@ public class Hibernate {
             try (Session session = sessionFactory.openSession()) {
                 Student student = session.find(Student.class, 1);
                 System.out.println("Student with grades: " + student);
+            }
+
+            //przykład relacji wiele do wiele
+            try (Session session = sessionFactory.openSession()) {
+                Transaction transaction = session.beginTransaction();
+                Student student = session.find(Student.class, 1);
+                Student student2 = session.find(Student.class, 2);
+                Academy academy = new Academy("SDA", Collections.singleton(student));
+                Set<Student> studentSet = new HashSet<>();
+                studentSet.add(student2);
+                studentSet.add(student);
+                Academy superCoder = new Academy("SuperCoder", studentSet);
+
+                session.persist(academy);
+                session.persist(superCoder);
+                transaction.commit();
+
             }
 
         }
@@ -74,11 +95,11 @@ public class Hibernate {
         }
     }
 
-    private static void saveStudent(SessionFactory sessionFactory) {
+    private static void saveStudent(SessionFactory sessionFactory, String firstName, String lastName) {
         try (Session session = sessionFactory.openSession()) {
             //jpa api
             Transaction transaction = session.beginTransaction();
-            Student studentJan = new Student("Jan", "Kowalski", new Address("Gdańsk", "Grunwaldzka"));
+            Student studentJan = new Student(firstName, lastName, new Address("Gdańsk", "Grunwaldzka"));
             session.persist(studentJan);
             System.out.println("Before commit");
             transaction.commit(); //zapis do bazy dopiero tutaj
