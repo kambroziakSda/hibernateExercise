@@ -2,6 +2,7 @@ package sda.hibernate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 public class Student {
@@ -18,6 +19,24 @@ public class Student {
     private LocalDateTime lastModifiedTime;
 
 
+    @OneToMany(mappedBy = "student")
+    private List<Grade> grades;
+
+    @Embedded
+    private Address address;
+
+
+
+    public Student(String firstName, String lastName, Address address) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.address = address;
+    }
+
+
+    private Student() {
+    }
+
     @PrePersist
     void prePersist(){
         System.out.println("Pre persist");
@@ -30,22 +49,12 @@ public class Student {
         lastModifiedTime = LocalDateTime.now();
     }
 
-
-    @Embedded
-    private Address address;
-
-    public Student(String firstName, String lastName, Address address) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.address = address;
-    }
-
-
-    private Student() {
-    }
-
     public void setAddress(Address address) {
         this.address = address;
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     @Override
@@ -56,6 +65,7 @@ public class Student {
                 ", lastName='" + lastName + '\'' +
                 ", createTime=" + createTime +
                 ", lastModifiedTime=" + lastModifiedTime +
+                ", grades=" + grades +
                 ", address=" + address +
                 '}';
     }

@@ -6,6 +6,7 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 public class Hibernate {
 
@@ -13,33 +14,53 @@ public class Hibernate {
         try (final SessionFactory sessionFactory = new Configuration()
                 .configure("hibernate.cfg.xml")
                 .addAnnotatedClass(Student.class)
+                .addAnnotatedClass(Grade.class)
+                .addAnnotatedClass(Teacher.class)
                 .buildSessionFactory()) {
 
 
             saveStudent(sessionFactory);
             selectAndUpdate(sessionFactory);
-
+            //  delete(sessionFactory);
             try (Session session = sessionFactory.openSession()) {
                 Transaction transaction = session.beginTransaction();
-                Student studentJan = session.find(Student.class, 1);
-                System.out.println("Student from database: " + studentJan);
-                session.delete(studentJan); //encja przechodzi w stan detached tzn usunieta z sesji ale jest jeszcze w bazie
-                studentJan = session.find(Student.class, 1);
-                System.out.println("Student after delete: " + studentJan); // null bo obiektu nie ma juz w sesji
+                Student student = session.find(Student.class, 1);
+                Teacher teacher = new Teacher("Krzysztof");
+                session.persist(teacher);
+                Grade grade = new Grade(5, teacher, student, LocalDateTime.now());
+                Grade grade2 = new Grade(4, teacher, student, LocalDateTime.now());
+                session.persist(grade);
+                session.persist(grade2);
+                transaction.commit();
+            }
 
-                //Exception bo studenta nie ma juz w sesji
-                try {
-                    studentJan = session.createQuery("SELECT s from Student s", Student.class).getSingleResult();
-                }catch (Exception e){
-                    System.out.println("Exception: " + e.getMessage());
-                }
-
-
-                transaction.commit(); //usuniecie dopiero tutaj
+            System.out.println("Before selecting student with grades: ");
+            try (Session session = sessionFactory.openSession()) {
+                Student student = session.find(Student.class, 1);
+                System.out.println("Student with grades: " + student);
             }
 
         }
 
+    }
+
+    private static void delete(SessionFactory sessionFactory) {
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Student studentJan = session.find(Student.class, 1);
+            System.out.println("Student from database: " + studentJan);
+            session.delete(studentJan); //encja przechodzi w stan detached tzn usunieta z sesji ale jest jeszcze w bazie
+            studentJan = session.find(Student.class, 1);
+            System.out.println("Student after delete: " + studentJan); // null bo obiektu nie ma juz w sesji
+
+            //Exception bo studenta nie ma juz w sesji
+            try {
+                studentJan = session.createQuery("SELECT s from Student s", Student.class).getSingleResult();
+            } catch (Exception e) {
+                System.out.println("Exception: " + e.getMessage());
+            }
+            transaction.commit(); //usuniecie dopiero tutaj
+        }
     }
 
     private static void selectAndUpdate(SessionFactory sessionFactory) {
@@ -48,7 +69,7 @@ public class Hibernate {
             Transaction transaction = session.beginTransaction();
             Student studentJan = session.find(Student.class, 1);
             System.out.println("Student from database: " + studentJan);
-            studentJan.setAddress(new Address("Warszawa","Miodowa"));
+            studentJan.setAddress(new Address("Warszawa", "Miodowa"));
             transaction.commit(); //zapis do bazy dopiero tutaj
         }
     }
