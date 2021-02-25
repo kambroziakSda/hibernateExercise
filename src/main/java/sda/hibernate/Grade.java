@@ -12,11 +12,11 @@ public class Grade {
 
     private int value;
 
-    @ManyToOne
+    @ManyToOne //domyślnie EAGER!
     @JoinColumn(name = "idteacher")
     private Teacher teacher;
 
-    @ManyToOne
+    @ManyToOne //domyślnie EAGER!
     @JoinColumn(name = "idstudent")
     private Student student;
 

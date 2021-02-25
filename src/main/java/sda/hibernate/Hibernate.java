@@ -7,6 +7,7 @@ import org.hibernate.cfg.Configuration;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class Hibernate {
 
@@ -19,29 +20,97 @@ public class Hibernate {
                 .buildSessionFactory()) {
 
 
-            saveStudent(sessionFactory);
+            saveStudent(sessionFactory, "Jan", "Kowalski");
+            saveStudent(sessionFactory, "Adam", "Nowak");
             selectAndUpdate(sessionFactory);
             //  delete(sessionFactory);
-            try (Session session = sessionFactory.openSession()) {
-                Transaction transaction = session.beginTransaction();
-                Student student = session.find(Student.class, 1);
-                Teacher teacher = new Teacher("Krzysztof");
-                session.persist(teacher);
-                Grade grade = new Grade(5, teacher, student, LocalDateTime.now());
-                Grade grade2 = new Grade(4, teacher, student, LocalDateTime.now());
-                session.persist(grade);
-                session.persist(grade2);
-                transaction.commit();
-            }
-
-            System.out.println("Before selecting student with grades: ");
-            try (Session session = sessionFactory.openSession()) {
-                Student student = session.find(Student.class, 1);
-                System.out.println("Student with grades: " + student);
-            }
+            Teacher teacher = new Teacher("Krzysztof");
+            addGradesForStudents(sessionFactory, teacher);
+            joinFetch(sessionFactory);
+            cascadeDelete(sessionFactory);
+            orphanRemvoval(sessionFactory);
+            cascadeAdd(sessionFactory, teacher);
 
         }
 
+    }
+
+    private static void orphanRemvoval(SessionFactory sessionFactory) {
+        //usuwanie elementow z relacji a usuwanie z bazy poniższe nie spowoduje usunięcia ocen studenta z bazy
+        // chyba że nad polem student.grades ustawimy opcje orphanRemoval=true
+        System.out.println("Usuniecie ocen drugiego studenta: ");
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Student student = session.find(Student.class, 2);
+            student.getGrades().clear(); // usuwa oceny tylko jesli orphanRemoval = true na polu students.grades
+            transaction.commit();
+
+        } catch (Exception e) {
+            System.out.println("Exception: " + e.getMessage());
+        }
+    }
+
+    private static void cascadeDelete(SessionFactory sessionFactory) {
+    /*
+                usuwanie studenta w raz  z ocenami, ponizsze nie zadziała bo mamy klucz obcy w tabeli grade.idstudent,
+                wiec albo trzeba najpierw usunac wszystkie oceny studenta a potem samego studenta albo użyć Cascade
+                na polu student.grades;
+      */
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Student student = session.find(Student.class, 1);
+            session.delete(student);
+            transaction.commit();
+
+        } catch (Exception e) {
+            System.out.println("Exception: " + e.getMessage());
+        }
+    }
+
+    private static void cascadeAdd(SessionFactory sessionFactory, Teacher teacher) {
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Student student2 = session.find(Student.class, 2);
+            student2.getGrades().add(new Grade(2, teacher, student2, LocalDateTime.now()));
+            session.persist(student2);
+
+            transaction.commit();
+
+        } catch (Exception e) {
+            System.out.println("Exception: " + e.getMessage());
+        }
+    }
+
+    private static void joinFetch(SessionFactory sessionFactory) {
+        System.out.println("Before selecting students ");
+        try (Session session = sessionFactory.openSession()) {
+            // join fetch powoduje wyciagniecie encji powiązanych za pomocą SQL JOIN
+            List<Student> students = session.createQuery("SELECT s FROM Student s JOIN FETCH s.grades g JOIN FETCH g.teacher", Student.class).getResultList();
+            System.out.println("Student with grades: " + students);
+        }
+    }
+
+    private static void addGradesForStudents(SessionFactory sessionFactory, Teacher teacher) {
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Student student = session.find(Student.class, 1);
+            Student student2 = session.find(Student.class, 2);
+
+            session.persist(teacher);
+            addGrades(session, student, student2, teacher);
+            transaction.commit();
+        }
+    }
+
+    private static void addGrades(Session session, Student student, Student student2, Teacher teacher) {
+        Grade grade = new Grade(5, teacher, student, LocalDateTime.now());
+        Grade grade2 = new Grade(4, teacher, student, LocalDateTime.now());
+        Grade grade3 = new Grade(2, teacher, student2, LocalDateTime.now());
+        Grade grade4 = new Grade(3, teacher, student2, LocalDateTime.now());
+        session.persist(grade);
+        session.persist(grade2);
+        session.persist(grade3);
+        session.persist(grade4);
     }
 
     private static void delete(SessionFactory sessionFactory) {
@@ -74,11 +143,11 @@ public class Hibernate {
         }
     }
 
-    private static void saveStudent(SessionFactory sessionFactory) {
+    private static void saveStudent(SessionFactory sessionFactory, String firstName, String lastName) {
         try (Session session = sessionFactory.openSession()) {
             //jpa api
             Transaction transaction = session.beginTransaction();
-            Student studentJan = new Student("Jan", "Kowalski", new Address("Gdańsk", "Grunwaldzka"));
+            Student studentJan = new Student(firstName, lastName, new Address("Gdańsk", "Grunwaldzka"));
             session.persist(studentJan);
             System.out.println("Before commit");
             transaction.commit(); //zapis do bazy dopiero tutaj
