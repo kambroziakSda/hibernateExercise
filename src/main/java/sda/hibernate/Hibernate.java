@@ -5,9 +5,11 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Hibernate {
 
@@ -17,11 +19,13 @@ public class Hibernate {
                 .addAnnotatedClass(Student.class)
                 .addAnnotatedClass(Grade.class)
                 .addAnnotatedClass(Teacher.class)
+                .addAnnotatedClass(Academy.class)
                 .buildSessionFactory()) {
 
 
             saveStudent(sessionFactory, "Jan", "Kowalski");
             saveStudent(sessionFactory, "Adam", "Nowak");
+            saveStudent(sessionFactory, "Alice", "Nowak");
             selectAndUpdate(sessionFactory);
             //  delete(sessionFactory);
             Teacher teacher = new Teacher("Krzysztof");
@@ -30,6 +34,27 @@ public class Hibernate {
             cascadeDelete(sessionFactory);
             orphanRemvoval(sessionFactory);
             cascadeAdd(sessionFactory, teacher);
+
+
+            try (Session session = sessionFactory.openSession()) {
+                Transaction transaction = session.beginTransaction();
+                Student student2 = session.find(Student.class, 2);
+                Student student3 = session.find(Student.class, 3);
+
+            Set<Student> studentSet = new HashSet<>();
+                studentSet.add(student2);
+                studentSet.add(student3);
+                Academy superCoder = new Academy("SuperCoder",  studentSet);
+                Academy academy = new Academy("SDA", Collections.singleton(student2));
+
+                session.persist(superCoder);
+                session.persist(academy);
+
+                transaction.commit();
+
+            }
+
+
 
         }
 
