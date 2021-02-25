@@ -17,38 +17,40 @@ public class Hibernate {
 
 
             saveStudent(sessionFactory);
+            selectAndUpdate(sessionFactory);
 
             try (Session session = sessionFactory.openSession()) {
-                //update wymaga transakcji tak samo jak insert
                 Transaction transaction = session.beginTransaction();
                 Student studentJan = session.find(Student.class, 1);
                 System.out.println("Student from database: " + studentJan);
-                studentJan.setAddress(new Address("Warszawa","Miodowa"));
-                transaction.commit(); //zapis do bazy dopiero tutaj
+                session.delete(studentJan); //encja przechodzi w stan detached tzn usunieta z sesji ale jest jeszcze w bazie
+                studentJan = session.find(Student.class, 1);
+                System.out.println("Student after delete: " + studentJan); // null bo obiektu nie ma juz w sesji
+
+                //Exception bo studenta nie ma juz w sesji
+                try {
+                    studentJan = session.createQuery("SELECT s from Student s", Student.class).getSingleResult();
+                }catch (Exception e){
+                    System.out.println("Exception: " + e.getMessage());
+                }
+
+
+                transaction.commit(); //usuniecie dopiero tutaj
             }
 
-            /*
-            Poniższy przykład pokazuje działanie obiektu sesji jako cache dla encji. Aktualizacja danych jest widoczna
-            po drugim wywołaniu find mimo że nie było zapisu do bazy. Obiekt jest zmieniany na poziomie sesji i nastepnie z niej wyciagany.
-            Porownanie .equals pokazuje ze find 1 i find 2 zwraca ten sam obiekt
-             */
-
-            try (Session session = sessionFactory.openSession()) {
-                //update wymaga transakcji tak samo jak insert
-                Transaction transaction = session.beginTransaction();
-                Student studentJan = session.find(Student.class, 1); //find 1
-                System.out.println("Student from database after 1 update: " + studentJan);
-                studentJan.setAddress(new Address("Warszawa","Wiejska"));
-
-                Student studentJan2 = session.find(Student.class, 1); //find 2
-
-                System.out.println("Student from database after 2 update: " + studentJan2);
-                System.out.println("Czy to ten sam obiekt studenta: " + studentJan.equals(studentJan2));
-
-                transaction.commit(); //zapis do bazy dopiero tutaj
-            }
         }
 
+    }
+
+    private static void selectAndUpdate(SessionFactory sessionFactory) {
+        try (Session session = sessionFactory.openSession()) {
+            //update wymaga transakcji tak samo jak insert
+            Transaction transaction = session.beginTransaction();
+            Student studentJan = session.find(Student.class, 1);
+            System.out.println("Student from database: " + studentJan);
+            studentJan.setAddress(new Address("Warszawa","Miodowa"));
+            transaction.commit(); //zapis do bazy dopiero tutaj
+        }
     }
 
     private static void saveStudent(SessionFactory sessionFactory) {
