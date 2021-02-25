@@ -1,7 +1,5 @@
 package sda.hibernate;
 
-import javax.persistence.*;
-
 public class Student {
 
     private String firstName;
