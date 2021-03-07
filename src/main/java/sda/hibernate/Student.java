@@ -22,7 +22,6 @@ public class Student {
         createTime = LocalDateTime.now();
     }
 
-
     @Embedded
     private Address address;
 
