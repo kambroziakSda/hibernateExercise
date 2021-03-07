@@ -6,8 +6,17 @@
         <property name="connection.password"></property>
         <property name="dialect">org.hibernate.dialect.H2Dialect</property>
         <property name="show_sql">true</property>
-        <property name="hibernate.hbm2ddl.auto">create-drop</property>
         <property name="format_sql">true</property>
-<!--        <property name="hibernate.hbm2ddl.import_files">schema-generation.sql</property>-->
+        <!-- https://thorben-janssen.com/standardized-schema-generation-data-loading-jpa-2-1/ -->
+        <property name="javax.persistence.schema-generation.database.action">drop-and-create</property>
+        <property name="javax.persistence.schema-generation.create-source">metadata</property>
+        <property name="javax.persistence.schema-generation.scripts.action">create</property>
+        <property name="javax.persistence.schema-generation.scripts.create-target">schema.sql</property>
+        <!--  <property name="javax.persistence.schema-generation.create-script-source">schema-generation.sql</property>
+          <property name="javax.persistence.schema-generation.drop-source">script</property>
+          <property name="javax.persistence.schema-generation.drop-script-source">schema-drop.sql</property>
+
+          <property name="javax.persistence.sql-load-script-source">data.sql</property>-->
+
     </session-factory>
 </hibernate-configuration>
