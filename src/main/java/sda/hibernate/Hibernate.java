@@ -10,6 +10,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+/*
+- Modelowanie relacji na podstawie encji grade, teacher, student, academy
+- n-n modelowane jako Set
+ */
 public class Hibernate {
 
     public static void main(String[] args) throws InterruptedException {
