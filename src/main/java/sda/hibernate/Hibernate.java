@@ -10,7 +10,11 @@ import java.util.List;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
+/*
+-N+1 select problem, lazy, eager
+-join fetch
+-cascade delete, persist
+ */
 public class Hibernate {
 
     public static void main(String[] args) throws InterruptedException {
