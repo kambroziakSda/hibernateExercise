@@ -4,9 +4,13 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
-
-import java.io.Serializable;
-
+/*
+-Sesja jako cache; find nie zawsze wyciaga z bazy
+-Update wymaga transakcji
+-Nie jest konieczne wołanie metody update
+-W obrebie jednej sesji hibernate zawsze zwraca ten sam obiekt - przykład z equals
+-Lifecycle method preUpdate, postUpdate
+ */
 public class Hibernate {
 
     public static void main(String[] args) throws InterruptedException {
