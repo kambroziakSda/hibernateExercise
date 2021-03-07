@@ -4,9 +4,9 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
-
-import java.io.Serializable;
-
+/*
+Usuwanie encji za pomoca metody delete;
+ */
 public class Hibernate {
 
     public static void main(String[] args) throws InterruptedException {
