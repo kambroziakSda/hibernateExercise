@@ -7,6 +7,13 @@ import org.hibernate.cfg.Configuration;
 
 import java.util.List;
 
+/*
+metoda find i zapytania HQL z parametrami
+Ustawianie maksymalnej ilosci rezultatow oraz pierwszego rezultatu
+select new
+getSingleResult - exception w wypadku nieunikalnych lub braku rezultatu
+ */
+
 public class Hibernate {
 
     public static void main(String[] args) throws InterruptedException {
@@ -23,9 +30,6 @@ public class Hibernate {
                 selectByFind(session);
                 selectListByHql(session);
                 notUniqueResultsException(session);
-
-
-
             }
         }
 
@@ -65,7 +69,7 @@ public class Hibernate {
                 // .setFirstResult(1)
                 .getResultList();
 
-        System.out.println("Studens from grunwaldzka: " + studentsFromGrunwaldzka);
+        System.out.println("Students from grunwaldzka: " + studentsFromGrunwaldzka);
 
 
         //wyciaganie konkretnych pol zamiast całych encji:
