@@ -7,6 +7,10 @@ import org.hibernate.cfg.Configuration;
 
 import java.util.List;
 
+/*
+-Native query - zapytania bezposrednio na bazie w 'zwykłym' SQL pomijaja obiekty trzymane w sesji
+-NamedQuery - kompilowane zapytania, błędy wychodzą w momencie tworzenia SessionFactory a nie w Runtime
+ */
 public class Hibernate {
 
     public static void main(String[] args) throws InterruptedException {
