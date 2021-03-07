@@ -20,6 +20,8 @@ public class Hibernate {
                 .addAnnotatedClass(Grade.class)
                 .addAnnotatedClass(Teacher.class)
                 .addAnnotatedClass(Academy.class)
+                .addAnnotatedClass(TextGrade.class)
+                .addAnnotatedClass(NumberGrade.class)
                 .buildSessionFactory()) {
 
 
@@ -34,30 +36,31 @@ public class Hibernate {
             cascadeDelete(sessionFactory);
             orphanRemvoval(sessionFactory);
             cascadeAdd(sessionFactory, teacher);
-
-
-            try (Session session = sessionFactory.openSession()) {
-                Transaction transaction = session.beginTransaction();
-                Student student2 = session.find(Student.class, 2);
-                Student student3 = session.find(Student.class, 3);
-
-            Set<Student> studentSet = new HashSet<>();
-                studentSet.add(student2);
-                studentSet.add(student3);
-                Academy superCoder = new Academy("SuperCoder",  studentSet);
-                Academy academy = new Academy("SDA", Collections.singleton(student2));
-
-                session.persist(superCoder);
-                session.persist(academy);
-
-                transaction.commit();
-
-            }
-
+            manyToMany(sessionFactory);
 
 
         }
 
+    }
+
+    private static void manyToMany(SessionFactory sessionFactory) {
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Student student2 = session.find(Student.class, 2);
+            Student student3 = session.find(Student.class, 3);
+
+        Set<Student> studentSet = new HashSet<>();
+            studentSet.add(student2);
+            studentSet.add(student3);
+            Academy superCoder = new Academy("SuperCoder",  studentSet);
+            Academy academy = new Academy("SDA", Collections.singleton(student2));
+
+            session.persist(superCoder);
+            session.persist(academy);
+
+            transaction.commit();
+
+        }
     }
 
     private static void orphanRemvoval(SessionFactory sessionFactory) {
@@ -96,7 +99,7 @@ public class Hibernate {
         try (Session session = sessionFactory.openSession()) {
             Transaction transaction = session.beginTransaction();
             Student student2 = session.find(Student.class, 2);
-            student2.getGrades().add(new Grade(2, teacher, student2, LocalDateTime.now()));
+            student2.getGrades().add(new TextGrade(teacher, student2, LocalDateTime.now(),"super!"));
             session.persist(student2);
 
             transaction.commit();
@@ -128,10 +131,10 @@ public class Hibernate {
     }
 
     private static void addGrades(Session session, Student student, Student student2, Teacher teacher) {
-        Grade grade = new Grade(5, teacher, student, LocalDateTime.now());
-        Grade grade2 = new Grade(4, teacher, student, LocalDateTime.now());
-        Grade grade3 = new Grade(2, teacher, student2, LocalDateTime.now());
-        Grade grade4 = new Grade(3, teacher, student2, LocalDateTime.now());
+        Grade grade = new NumberGrade(5, teacher, student, LocalDateTime.now());
+        Grade grade2 = new NumberGrade(4, teacher, student, LocalDateTime.now());
+        Grade grade3 = new NumberGrade(2, teacher, student2, LocalDateTime.now());
+        Grade grade4 = new NumberGrade(3, teacher, student2, LocalDateTime.now());
         session.persist(grade);
         session.persist(grade2);
         session.persist(grade3);

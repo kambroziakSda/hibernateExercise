@@ -4,13 +4,14 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-public class Grade {
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@DiscriminatorColumn(name = "type")
+public abstract class Grade {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    private int value;
 
     @ManyToOne //domyślnie EAGER!
     @JoinColumn(name = "idteacher")
@@ -22,11 +23,10 @@ public class Grade {
 
     private LocalDateTime createTime;
 
-    private Grade() {
+    Grade() {
     }
 
-    public Grade(int value, Teacher teacher, Student student, LocalDateTime createTime) {
-        this.value = value;
+    protected Grade(Teacher teacher, Student student, LocalDateTime createTime) {
         this.teacher = teacher;
         this.student = student;
         this.createTime = createTime;
@@ -40,7 +40,6 @@ public class Grade {
     public String toString() {
         return "Grade{" +
                 "id=" + id +
-                ", value=" + value +
                 ", teacher=" + teacher +
                 ", student=" + student.getId() +
                 ", createTime=" + createTime +
