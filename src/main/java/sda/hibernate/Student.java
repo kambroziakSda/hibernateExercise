@@ -4,7 +4,10 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@NamedQueries(@NamedQuery(name = Student.FIND_ALL_STUDENTS, query = "SELECT e from Student e"))
 public class Student {
+
+    public static final String FIND_ALL_STUDENTS = "Students.FindAll";
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -19,13 +22,13 @@ public class Student {
 
 
     @PrePersist
-    void prePersist(){
+    void prePersist() {
         System.out.println("Pre persist");
         createTime = LocalDateTime.now();
     }
 
     @PreUpdate
-    void preUpdate(){
+    void preUpdate() {
         System.out.println("Pre update");
         lastModifiedTime = LocalDateTime.now();
     }
@@ -58,5 +61,9 @@ public class Student {
                 ", lastModifiedTime=" + lastModifiedTime +
                 ", address=" + address +
                 '}';
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 }
