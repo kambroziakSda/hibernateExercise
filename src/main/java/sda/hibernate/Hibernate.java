@@ -6,7 +6,7 @@ import org.hibernate.cfg.Configuration;
 /*
 1. Modelowanie: @id,@GeneratedValue, @Column, bezparametrowy konstruktor, @entity, getery i settery nie sa niezbedne, @Embedded
 2. generowanie skryptu bazy na podstawie encji
-3. klucz złożony - encja teacher
+3. klucz złożony - encja Teacher, Director
  */
 
 public class Hibernate {
