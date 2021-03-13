@@ -25,6 +25,7 @@ public class Hibernate {
             try (Session session = sessionFactory.openSession()) {
 
             //jpa api
+                System.out.println("[main] JPA persist");
                 Transaction transaction = session.beginTransaction();
                 Student studentJan = new Student("Jan", "Kowalski", new Address("Gdańsk", "Grunwaldzka"));
 
@@ -35,18 +36,18 @@ public class Hibernate {
                  */
                 session.persist(studentJan);
 
-                System.out.println("Before commit");
+                System.out.println("[main] Before commit");
                 transaction.commit(); //zapis do bazy dopiero tutaj
 
 
             //hibernate api
+                System.out.println("[main] Hibernate save");
                 transaction = session.beginTransaction();
                 Student studentAla = new Student("Ala", "Kowalska", new Address("Gdańsk", "Grunwaldzka"));
                 Serializable id = session.save(studentAla);
+                System.out.println("[main] save returned: " + id);
+
                 transaction.commit();
-
-                System.out.println(id);
-
             }
         }
 
