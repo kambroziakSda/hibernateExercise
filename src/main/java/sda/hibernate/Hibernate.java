@@ -26,7 +26,7 @@ public class Hibernate {
                 //update wymaga transakcji tak samo jak insert
                 Transaction transaction = session.beginTransaction();
                 Student studentJan = session.find(Student.class, 1);
-                System.out.println("Student from database: " + studentJan);
+                System.out.println("[main] Student from database: " + studentJan);
                 studentJan.setAddress(new Address("Warszawa","Miodowa"));
                 transaction.commit(); //zapis do bazy dopiero tutaj
             }
@@ -41,13 +41,13 @@ public class Hibernate {
                 //update wymaga transakcji tak samo jak insert
                 Transaction transaction = session.beginTransaction();
                 Student studentJan = session.find(Student.class, 1); //find 1
-                System.out.println("Student from database after 1 update: " + studentJan);
+                System.out.println("[main] Student from database after first update: " + studentJan);
                 studentJan.setAddress(new Address("Warszawa","Wiejska"));
 
                 Student studentJan2 = session.find(Student.class, 1); //find 2
 
-                System.out.println("Student from database after 2 update: " + studentJan2);
-                System.out.println("Czy to ten sam obiekt studenta: " + studentJan.equals(studentJan2));
+                System.out.println("[main] Student from database after second update: " + studentJan2);
+                System.out.println("[main] Czy to ten sam obiekt studenta: " + studentJan.equals(studentJan2));
 
                 transaction.commit(); //zapis do bazy dopiero tutaj
             }
