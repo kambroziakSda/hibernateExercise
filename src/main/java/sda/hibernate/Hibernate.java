@@ -12,6 +12,7 @@ metoda find i zapytania HQL z parametrami
 Ustawianie maksymalnej ilosci rezultatow oraz pierwszego rezultatu
 select new
 getSingleResult - exception w wypadku nieunikalnych lub braku rezultatu
+lifecycle postLoad
  */
 
 public class Hibernate {

@@ -22,6 +22,11 @@ public class Student {
         createTime = LocalDateTime.now();
     }
 
+    @PostLoad
+    void postLoad(){
+        System.out.println("[Student] Student entity loaded");
+    }
+
 
     @Embedded
     private Address address;
