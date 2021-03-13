@@ -6,6 +6,7 @@ import org.hibernate.annotations.FetchMode;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Student {
@@ -34,6 +35,9 @@ public class Student {
 
     @Embedded
     private Address address;
+
+    @ManyToMany(mappedBy = "students")
+    private Set<Academy> academies;
 
 
     public Student(String firstName, String lastName, Address address) {
@@ -68,6 +72,10 @@ public class Student {
 
     public List<Grade> getGrades() {
         return grades;
+    }
+
+    public Set<Academy> getAcademies() {
+        return academies;
     }
 
     @Override

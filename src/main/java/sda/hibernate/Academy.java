@@ -18,11 +18,19 @@ public class Academy {
     //https://thorben-janssen.com/association-mappings-bag-list-set/
     private Set<Student> students;
 
+    private Academy(){
+
+    }
+
 
     public Academy(String name, Set<Student>  students) {
         this.name = name;
         this.students = students;
 
+    }
+
+    public Set<Student> getStudents() {
+        return students;
     }
 
     @Override

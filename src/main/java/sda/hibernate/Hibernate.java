@@ -6,14 +6,13 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+
 /*
 -N+1 select problem, lazy, eager
 -join fetch
 -cascade delete, persist
+-delete from many to many - modelowanie jako set!
  */
 public class Hibernate {
 
@@ -34,34 +33,56 @@ public class Hibernate {
             //  delete(sessionFactory);
             Teacher teacher = new Teacher("Krzysztof");
             addGradesForStudents(sessionFactory, teacher);
+
             joinFetch(sessionFactory);
             cascadeDelete(sessionFactory);
             orphanRemvoval(sessionFactory);
             cascadeAdd(sessionFactory, teacher);
+            persistManyToMany(sessionFactory);
 
-
-            try (Session session = sessionFactory.openSession()) {
-                Transaction transaction = session.beginTransaction();
-                Student student2 = session.find(Student.class, 2);
-                Student student3 = session.find(Student.class, 3);
-
-            Set<Student> studentSet = new HashSet<>();
-                studentSet.add(student2);
-                studentSet.add(student3);
-                Academy superCoder = new Academy("SuperCoder",  studentSet);
-                Academy academy = new Academy("SDA", Collections.singleton(student2));
-
-                session.persist(superCoder);
-                session.persist(academy);
-
-                transaction.commit();
-
-            }
-
+            removeFromManyToMany(sessionFactory);
 
 
         }
 
+    }
+
+    private static void removeFromManyToMany(SessionFactory sessionFactory) {
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            System.out.println("Selecting academy");
+            Academy superCoder = session.find(Academy.class, "SuperCoder");
+            Student student2 = session.find(Student.class, 2);
+
+          //  student2.getAcademies().remove(superCoder);
+
+            superCoder.getStudents().remove(student2);
+
+            System.out.println(superCoder);
+
+            session.getTransaction().commit();
+
+        }
+    }
+
+    private static void persistManyToMany(SessionFactory sessionFactory) {
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Student student2 = session.find(Student.class, 2);
+            Student student3 = session.find(Student.class, 3);
+
+            Set<Student> studentSet = new HashSet<>();
+            studentSet.add(student2);
+            studentSet.add(student3);
+            Academy superCoder = new Academy("SuperCoder", studentSet);
+            Academy academy = new Academy("SDA", Collections.singleton(student2));
+
+            session.persist(superCoder);
+            session.persist(academy);
+
+            transaction.commit();
+
+        }
     }
 
     private static void orphanRemvoval(SessionFactory sessionFactory) {
