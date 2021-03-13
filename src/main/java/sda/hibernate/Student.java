@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@EntityListeners(StudentEntityEventListener.class)
 public class Student {
 
     @Id
@@ -18,8 +19,13 @@ public class Student {
 
     @PrePersist
     void prePersist(){
-        System.out.println("Pre persist");
+        System.out.println("[Student] Pre persist");
         createTime = LocalDateTime.now();
+    }
+
+    @PostPersist
+    void postPersist(){
+        System.out.println("[Student] Post persist");
     }
 
     @Embedded

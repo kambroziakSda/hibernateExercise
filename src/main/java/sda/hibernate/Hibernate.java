@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /*
 Zapis do bazy w transakcji
-Lifecycle methods: prePersist
+Lifecycle methods: prePersist, postPersist, StudentEntityEventListener
 Graf przejsc stanów encji
 API Hibernate vs API JPA
  */
