@@ -6,6 +6,7 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 /*
 Usuwanie encji za pomoca metody delete;
+Wszystkie metody lifecycle: PrePersist, PostPersist, PostLoad, PreUpdate, PostUpdate, PreRemove, PostRemove
  */
 public class Hibernate {
 
@@ -22,16 +23,16 @@ public class Hibernate {
             try (Session session = sessionFactory.openSession()) {
                 Transaction transaction = session.beginTransaction();
                 Student studentJan = session.find(Student.class, 1);
-                System.out.println("Student from database: " + studentJan);
+                System.out.println("[main] Student from database: " + studentJan);
                 session.delete(studentJan); //encja przechodzi w stan detached tzn usunieta z sesji ale jest jeszcze w bazie
                 studentJan = session.find(Student.class, 1);
-                System.out.println("Student after delete: " + studentJan); // null bo obiektu nie ma juz w sesji
+                System.out.println("[main] Student after delete: " + studentJan); // null bo obiektu nie ma juz w sesji
 
                 //Exception bo studenta nie ma juz w sesji
                 try {
                     studentJan = session.createQuery("SELECT s from Student s", Student.class).getSingleResult();
                 }catch (Exception e){
-                    System.out.println("Exception: " + e.getMessage());
+                    System.out.println("[main] Exception: " + e.getMessage());
                 }
 
 
@@ -47,7 +48,7 @@ public class Hibernate {
             //update wymaga transakcji tak samo jak insert
             Transaction transaction = session.beginTransaction();
             Student studentJan = session.find(Student.class, 1);
-            System.out.println("Student from database: " + studentJan);
+            System.out.println("[main] Student from database: " + studentJan);
             studentJan.setAddress(new Address("Warszawa","Miodowa"));
             transaction.commit(); //zapis do bazy dopiero tutaj
         }
@@ -59,7 +60,7 @@ public class Hibernate {
             Transaction transaction = session.beginTransaction();
             Student studentJan = new Student("Jan", "Kowalski", new Address("Gdańsk", "Grunwaldzka"));
             session.persist(studentJan);
-            System.out.println("Before commit");
+            System.out.println("[main] Before commit");
             transaction.commit(); //zapis do bazy dopiero tutaj
         }
     }

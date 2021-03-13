@@ -17,19 +17,43 @@ public class Student {
     private LocalDateTime createTime;
     private LocalDateTime lastModifiedTime;
 
+    @PostLoad
+    public void postLoad(){
+        System.out.println("[Student] Post load");
+    }
+
 
     @PrePersist
     void prePersist(){
-        System.out.println("Pre persist");
+        System.out.println("[Student] Pre persist");
         createTime = LocalDateTime.now();
+    }
+
+    @PostPersist
+    void postPersist(){
+        System.out.println("[Student] Post persist");
     }
 
     @PreUpdate
     void preUpdate(){
-        System.out.println("Pre update");
+        System.out.println("[Student] Pre update");
         lastModifiedTime = LocalDateTime.now();
     }
 
+    @PostUpdate
+    void postUpdate(){
+        System.out.println("[Student] Post update");
+    }
+
+    @PreRemove
+    void preRemove(){
+        System.out.println("[Student] Pre remove");
+    }
+
+    @PostRemove
+    void postRemove(){
+        System.out.println("[Student] Post remove");
+    }
 
     @Embedded
     private Address address;
