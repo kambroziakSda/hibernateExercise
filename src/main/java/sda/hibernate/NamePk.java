@@ -8,6 +8,14 @@ import java.util.Objects;
 //Serialiable konieczne  w klasach pod klucze złożone
 public class NamePk implements Serializable {
 
+    NamePk() {
+    }
+
+    public NamePk(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
     private String firstName;
 
     private String lastName;
@@ -27,5 +35,13 @@ public class NamePk implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(firstName, lastName);
+    }
+
+    @Override
+    public String toString() {
+        return "NamePk{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                '}';
     }
 }
